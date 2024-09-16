@@ -26,6 +26,7 @@ parser.add_argument('--face', type=str,
                     help='Filepath of video/image that contains faces to use', required=True)
 parser.add_argument('--audio', type=str, 
                     help='Filepath of video/audio file to use as raw audio source', required=True)
+parser.add_argument('--speaker', type=str, help='Name of the speaker for this clip.', required=True)
 parser.add_argument('--outfile', type=str, help='Video path to save result. See default for an e.g.', 
                                 default='results/result_voice.mp4')
 
@@ -431,7 +432,7 @@ def face_rect0(images):
             cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 200), 2)
             cv2.putText(image, name, (left, top - 10), font, 1, (200, 0, 0), 2)
 
-            if name == "man 2" or name == "woman 1":
+            if name == args.speaker:
                 box_list = [left, top, right, bottom]
                 box = np.array(box_list)
                 prev_ret = tuple(map(int, box))
