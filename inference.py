@@ -120,9 +120,9 @@ def face_detect(images):
 
     s = time()
 
-    # face_rect0(images)
+    # face_rect_multiple(images)
 
-    for image, rect in zip(images, face_rect0(images)):
+    for image, rect in zip(images, face_rect_multiple(images)):
         if rect is None:
             cv2.imwrite('temp/faulty_frame.jpg', image) # check this frame where the face was not detected.
             raise ValueError('Face not detected! Ensure the video contains a face in all the frames.')
@@ -386,7 +386,7 @@ def do_load(checkpoint_path):
 
     print("Models loaded")
 
-def face_rect0(images):
+def face_rect_multiple(images):
     prev_ret = None
 
     for image in images:
