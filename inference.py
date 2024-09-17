@@ -9,6 +9,7 @@ import face_recognition
 import numpy as np
 import torch
 from tqdm import tqdm
+import re
 
 import audio
 # from face_detect import face_rect
@@ -61,6 +62,8 @@ parser.add_argument('--rotate', default=False, action='store_true',
 parser.add_argument('--nosmooth', default=False, action='store_true',
                     help='Prevent smoothing face detections over a short temporal window')
 
+parser.add_argument('--image_paths', nargs='+', type=str, help='List of image file paths to process for face encodings', required=True)
+
 
 def get_smoothened_boxes(boxes, T):
     for i in range(len(boxes)):
@@ -72,47 +75,83 @@ def get_smoothened_boxes(boxes, T):
     return boxes
 
 
-img = cv2.imread("../man 1.png")
-rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-img_encoding = face_recognition.face_encodings(rgb_img, num_jitters=2, model="large")[0]
+# img = cv2.imread("../man 1.png")
+# rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+# img_encoding = face_recognition.face_encodings(rgb_img, num_jitters=2, model="large")[0]
 
-img2 = cv2.imread("../man 2.png")
-rgb_img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
-img_encoding2 = face_recognition.face_encodings(rgb_img2, num_jitters=2, model="large")[0]
+# img2 = cv2.imread("../man 2.png")
+# rgb_img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
+# img_encoding2 = face_recognition.face_encodings(rgb_img2, num_jitters=2, model="large")[0]
 
-img3 = cv2.imread("../woman 1.png")
-rgb_img3 = cv2.cvtColor(img3, cv2.COLOR_BGR2RGB)
-img_encoding3 = face_recognition.face_encodings(rgb_img3, num_jitters=2, model="large")[0]
+# img3 = cv2.imread("../woman 1.png")
+# rgb_img3 = cv2.cvtColor(img3, cv2.COLOR_BGR2RGB)
+# img_encoding3 = face_recognition.face_encodings(rgb_img3, num_jitters=2, model="large")[0]
 
-img4 = cv2.imread("../woman 2.png")
-rgb_img4 = cv2.cvtColor(img4, cv2.COLOR_BGR2RGB)
-img_encoding4 = face_recognition.face_encodings(rgb_img4, num_jitters=2, model="large")[0]
+# img4 = cv2.imread("../woman 2.png")
+# rgb_img4 = cv2.cvtColor(img4, cv2.COLOR_BGR2RGB)
+# img_encoding4 = face_recognition.face_encodings(rgb_img4, num_jitters=2, model="large")[0]
 
-img5 = cv2.imread("../man 1-2.png")
-rgb_img5 = cv2.cvtColor(img5, cv2.COLOR_BGR2RGB)
-img_encoding5 = face_recognition.face_encodings(rgb_img5, num_jitters=2, model="large")[0]
+# img5 = cv2.imread("../man 1-2.png")
+# rgb_img5 = cv2.cvtColor(img5, cv2.COLOR_BGR2RGB)
+# img_encoding5 = face_recognition.face_encodings(rgb_img5, num_jitters=2, model="large")[0]
 
-img6 = cv2.imread("../man 2-2.png")
-rgb_img6 = cv2.cvtColor(img6, cv2.COLOR_BGR2RGB)
-img_encoding6 = face_recognition.face_encodings(rgb_img6, num_jitters=2, model="large")[0]
+# img6 = cv2.imread("../man 2-2.png")
+# rgb_img6 = cv2.cvtColor(img6, cv2.COLOR_BGR2RGB)
+# img_encoding6 = face_recognition.face_encodings(rgb_img6, num_jitters=2, model="large")[0]
 
-known_face_encodings = [
-    img_encoding,
-    img_encoding2,
-    img_encoding3,
-    img_encoding4,
-    img_encoding5,
-    img_encoding6
-]
-known_face_names = [
-    "man 1",
-    "man 2",
-    "woman 1",
-    "woman 2",
-    "man 1",
-    "man 2"
-]
+# known_face_encodings = [
+#     img_encoding,
+#     img_encoding2,
+#     img_encoding3,
+#     img_encoding4,
+#     img_encoding5,
+#     img_encoding6
+# ]
+# known_face_names = [
+#     "man 1",
+#     "man 2",
+#     "woman 1",
+#     "woman 2",
+#     "man 1",
+#     "man 2"
+# ]
 
+known_face_encodings = []
+known_face_names = []
+
+def parse_face_name(file_path):
+    """
+    Extract the name from the file path based on the naming rule.
+    File naming rule: "actor name (number to differentiate file)"
+    Example: "john (1)"
+    """
+    file_name = os.path.basename(file_path)
+    name = os.path.splitext(file_name)[0]  # Remove file extension
+    # Remove anything in parentheses, e.g., "man 1 (2)" becomes "man 1"
+    name = re.sub(r"\s*\(.*\)$", "", name)
+    return name
+
+def append_face_data():
+    """Append face encodings and names from the provided image paths to the known lists."""
+
+    for img_path in args.image_paths:
+        # Load the image
+        img = cv2.imread(img_path)
+        rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # Get the face encoding
+        try:
+            img_encoding = face_recognition.face_encodings(rgb_img, num_jitters=2, model="large")[0]
+        except IndexError:
+            print(f"No face found in {img_path}, skipping...")
+            continue
+
+        # Parse the face name from the file name
+        face_name = parse_face_name(img_path)
+
+        # Append the face encoding and name to the known lists
+        known_face_encodings.append(img_encoding)
+        known_face_names.append(face_name)
 
 def face_detect(images):
     results = []
@@ -462,4 +501,5 @@ def face_rect(images):
 if __name__ == '__main__':
     args = parser.parse_args()
     do_load(args.checkpoint_path)
+    append_face_data()
     main()
