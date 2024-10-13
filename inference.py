@@ -122,13 +122,16 @@ known_face_names = []
 def parse_face_name(file_path):
     """
     Extract the name from the file path based on the naming rule.
-    File naming rule: "actor name (number to differentiate file)"
-    Example: "john (1)"
+    File naming rule: "actor_name--(number to differentiate file)" NO SPACE!
+    Example: "john--2"
     """
     file_name = os.path.basename(file_path)
     name = os.path.splitext(file_name)[0]  # Remove file extension
-    # Remove anything in parentheses, e.g., "man 1 (2)" becomes "man 1"
-    name = re.sub(r"\s*\(.*\)$", "", name)
+    
+    # # Remove anything in parentheses, e.g., "man_1(2)" becomes "man_1"
+    # name = re.sub(r"\s*\(.*\)$", "", name)
+    # Remove anything after '--', e.g., "man_1--2" becomes "man_1"
+    name = re.split(r"--", name)[0]
     return name
 
 def append_face_data():
