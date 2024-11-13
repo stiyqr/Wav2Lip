@@ -451,13 +451,13 @@ def face_rect_multiple(images):
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 similarity = 1 / (1 + face_distances[best_match_index])
-                name = known_face_names[best_match_index] + " - " + similarity + "%"
+                name = known_face_names[best_match_index]
 
-            face_names.append(name)
+            face_names.append((name, similarity))
 
         has_ret = False
         # Display the results
-        for (top, right, bottom, left), name in zip(face_locations, face_names):
+        for (top, right, bottom, left), (name, percentage) in zip(face_locations, face_names):
             # # Scale back up face locations since the frame we detected in was scaled to 1/4 size
             # top *= 4
             # right *= 4
@@ -469,10 +469,11 @@ def face_rect_multiple(images):
 
             # Draw a label with a name below the face
             font = cv2.FONT_HERSHEY_DUPLEX
+            name_text = name + " - " + percentage + "%"
             # cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             # cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
             cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 200), 2)
-            cv2.putText(image, name, (left, top - 10), font, 1, (200, 0, 0), 2)
+            cv2.putText(image, name_text, (left, top - 10), font, 1, (200, 0, 0), 2)
 
             if name == args.speaker:
                 box_list = [left, top, right, bottom]
