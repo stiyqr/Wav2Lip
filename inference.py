@@ -436,10 +436,12 @@ def face_rect_multiple(images):
         face_encodings = face_recognition.face_encodings(image, face_locations, num_jitters=2, model="large")
 
         face_names = []
+        similarities = []
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.4)
             name = "Unknown"
+            similarity = 0
 
             # # If a match was found in known_face_encodings, just use the first one.
             # if True in matches:
@@ -453,11 +455,12 @@ def face_rect_multiple(images):
                 similarity = 1 / (1 + face_distances[best_match_index])
                 name = known_face_names[best_match_index]
 
-            face_names.append((name, similarity))
+            face_names.append(name)
+            similarities.append(similarity)
 
         has_ret = False
         # Display the results
-        for (top, right, bottom, left), (name, percentage) in zip(face_locations, face_names):
+        for (top, right, bottom, left), name, percentage in zip(face_locations, face_names, similarities):
             # # Scale back up face locations since the frame we detected in was scaled to 1/4 size
             # top *= 4
             # right *= 4
