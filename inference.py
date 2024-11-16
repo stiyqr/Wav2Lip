@@ -475,8 +475,8 @@ def face_rect_multiple(images):
             # cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             # cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
             cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 200), 2)
-            cv2.putText(image, name, (left, top - 10), font, 1, (200, 0, 0), 2)
-            cv2.putText(image, f"{percentage * 100:.2f}%", (left + 6, bottom - 6), font, 1, (200, 0, 0), 2)
+            cv2.putText(image, name, (left, top - 10), font, 1, (200, 0, 0), 2) # actor name
+            cv2.putText(image, f"{percentage * 100:.2f}%", (left + 6, bottom + 10), font, 1, (200, 0, 0), 2) # similarity percentage
 
             if name == args.speaker:
                 box_list = [left, top, right, bottom]
