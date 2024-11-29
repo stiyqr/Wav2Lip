@@ -490,9 +490,9 @@ def face_rect_multiple(images):
                 has_ret = True
             elif not has_ret:
                 # box_list = [left, top, right, bottom]
-                box_list = [0, 0, 0, 0]
-                box = np.array(box_list)
-                prev_ret = tuple(map(int, box))
+                # box = np.array(box_list)
+                # prev_ret = tuple(map(int, box))
+                prev_ret = None
         yield prev_ret
 
 face_batch_size = 64 * 8
