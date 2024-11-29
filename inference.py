@@ -489,7 +489,8 @@ def face_rect_multiple(images):
                 prev_ret = tuple(map(int, box))
                 has_ret = True
             elif not has_ret:
-                box_list = [left, top, right, bottom]
+                # box_list = [left, top, right, bottom]
+                box_list = [0, 0, 0, 0]
                 box = np.array(box_list)
                 prev_ret = tuple(map(int, box))
         yield prev_ret
